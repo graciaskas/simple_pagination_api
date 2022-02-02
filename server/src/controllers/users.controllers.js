@@ -1,34 +1,8 @@
 const axios = require("axios");
+const { paginate } = require("../utils/main.utils");
+
+//Base API url ==> You can replace with your
 const baseURL = "https://api.github.com/users";
-const usersDemoData = require("../data/users.data");
-
-/**
- * 
- * @param {*} param0 request query object
- * @param {*} content data array
- * @returns sliced array
- */
-const paginate = function ({ page = 1, limit = 3 }, content ) {
-    const items = content.length;
-   
-    const pageInt = parseInt(page);
-    const limitInt = parseInt(limit);
-    const pages = Math.ceil(items / limitInt);
-
-    const start = (pageInt - 1) * limitInt; 
-    const end = pageInt * limitInt;
-    //slice the array
-    const data = content.slice(start, end);
-    console.log(start,end);
-    return {
-        totlItems : items,
-        pages,
-        page,
-        limit,
-        items: data.length,
-        data
-    };
-};
 
 const sendResponse = function (res, status= 200, data={}) {
     return res.status(status).json({
@@ -46,8 +20,8 @@ const sendError = function (error, res) {
 
 exports.findMany = async function (req, res) {
     try {
-        // const { data } = await axios.get(baseURL);
-        const result = paginate(req.query, usersDemoData);
+        const { data } = await axios.get(baseURL);
+        const result = paginate(req.query, data);
         sendResponse(res, 200, result);
     } catch (error) {
         sendError(error, res);
